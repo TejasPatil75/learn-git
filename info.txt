@@ -1,0 +1,715 @@
+//1.Write code for a simple user registration form for an event using Flask and Docker in DevOps 
+
+-python should be installed.
+    to check ->
+    python --version
+    pip --version
+    
+-install docker desktop
+
+    docker --version
+
+- install Flask
+
+    pip install Flask
+
+- folder structure
+
+simple-flask-app/
+├── app.py
+├── Dockerfile
+├── requirements.txt
+└── templates/
+    ├── register.html
+    └── success.html
+
+- app.py 
+    
+from flask import Flask, request, render_template
+
+app = Flask(__name__)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        # TODO: Save data to DB or file (for now, just display success)
+        return render_template('success.html')
+    return render_template('register.html')
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
+- register.html
+
+<form method="post">
+    <input type="text" name="name" placeholder="Name" required><br>
+    <input type="email" name="email" placeholder="Email" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <input type="submit" value="Submit">
+  </form>
+  
+- success.html
+    
+<h2>Registration Successful!</h2>
+
+- requirements.txt
+
+Flask==2.3.3
+
+- Dockerfile
+
+# Use Python base image
+FROM python:3.8
+
+# Set working directory
+WORKDIR /app
+
+# Copy all files to container
+COPY . .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose the Flask port
+EXPOSE 5000
+
+# Command to run the app
+CMD ["python", "app.py"]
+
+-> Run the docker destop in background
+
+-> Build the Docker Image
+Open terminal in the project directory and run:
+
+docker build -t simple-flask-app .
+
+-> Run the Docker Container
+
+docker run -p 5000:5000 simple-flask-app
+
+-> Test the App
+Open your browser and go to:
+
+http://localhost:5000/register
+
+///// 2.Develop a simple web application using Flask that allows users to register for an event. Containerize the application using Docker and run it in a Docker container
+
+
+same as 1.
+
+////// 3. Implement GitHub Actions CI/CD for a Python/Flask app.
+
+my-flask-app/
+├── tests/
+│   ├── test_routes.py
+├── requirements.txt
+├── app.py
+├── .github/
+│   └── workflows/
+│       └── python-app.yml
+
+- test_routes.py
+
+import unittest
+from app import app
+
+
+class FlaskAppTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = app.test_client()
+
+    def test_home(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+- app.py
+
+from flask import Flask
+app = Flask(__name__)
+
+
+@app.route('/')
+def home():
+    return 'Hello, CI/CD!'
+
+- requirements.txt
+
+Flask
+pytest
+flake8
+
+- python-app.yml
+
+name: Flask CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11.9  # Or specify a version like 3.11
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        flake8 app.py tests  # Ensure 'app.py' or 'app' is correct
+
+    - name: Run tests with pytest
+      run: |
+        pip install pytest
+        PYTHONPATH=. pytest
+
+->> after creating all these files --
+
+-> 
+git init
+
+git add .
+
+git commit -m "Initial commit with Flask app and GitHub Actions workflow"
+
+git remote add origin <your-github-repository-url>
+
+git branch -M main
+
+git push -u origin main
+
+/// done,,,
+
+///// 4. Create a Flask application and push the code to GitHub.
+
+Absolutely! Here's a **detailed, step-by-step guide** to create a basic Flask application and push it to GitHub:
+
+---
+
+### ✅ Step 1: Install Python and Git
+
+Make sure Python and Git are installed.
+
+Check versions:
+
+```bash
+python --version
+git --version
+```
+
+If not installed:
+
+* [Download Python](https://www.python.org/downloads/)
+* [Download Git](https://git-scm.com/downloads)
+
+---
+
+### ✅ Step 2: Create and Set Up Your Project Folder
+
+Open a terminal and run:
+
+```bash
+mkdir flask_app
+cd flask_app
+```
+
+Create a virtual environment:
+
+```bash
+python -m venv venv
+```
+
+Activate the virtual environment:
+
+* On macOS/Linux:
+
+  ```bash
+  source venv/bin/activate
+  ```
+* On Windows:
+
+  ```bash
+  venv\Scripts\activate
+  ```
+
+---
+
+### ✅ Step 3: Install Flask
+
+With the virtual environment activated, install Flask:
+
+```bash
+pip install flask
+```
+
+Then freeze the dependencies to a file:
+
+```bash
+pip freeze > requirements.txt
+```
+
+---
+
+### ✅ Step 4: Create Flask App Code
+
+Create a file named `app.py`:
+
+```python
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Hello, Flask!"
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+---
+
+### ✅ Step 5: Add a `.gitignore` File
+
+Create a `.gitignore` file in the same folder and add the following:
+
+```
+venv/
+__pycache__/
+*.pyc
+.env
+```
+
+This prevents unnecessary or sensitive files from being tracked by Git.
+
+---
+
+### ✅ Step 6: Initialize Git Repository
+
+Run these commands to initialize Git and commit your code:
+
+```bash
+git init
+git add .
+git commit -m "Initial commit: basic Flask app"
+```
+
+---
+
+### ✅ Step 7: Create a Repository on GitHub
+
+1. Go to [https://github.com](https://github.com).
+2. Click **New repository**.
+3. Name it (e.g., `flask_app`) and **do not** initialize with README.
+4. Click **Create repository**.
+
+You’ll be shown a URL like:
+
+```
+https://github.com/yourusername/flask_app.git
+```
+
+---
+
+### ✅ Step 8: Push Local Code to GitHub
+
+Run the following commands in your terminal:
+
+```bash
+git remote add origin https://github.com/yourusername/flask_app.git
+git branch -M main
+git push -u origin main
+```
+
+(Replace the URL with your repo’s actual URL.)
+
+---
+
+### ✅ Step 9: Run the App Locally
+
+You can test your app by running:
+
+```bash
+python app.py
+```
+
+Visit `http://127.0.0.1:5000` in your browser. You should see “Hello, Flask!”
+
+/// doneeee...
+
+///// 5. Jenkins installation and setup explore the environment for Continuous Integration and Continuous Deployment (CI/CD) in software development. 
+
+-> install java version 17 or 21 ( x64 installer )
+
+-> Download Jenkins
+
+Under Windows, download the Jenkins.msi installer.
+
+Run the installer:
+
+By default, Jenkins will be available at:
+http://localhost:8080
+
+After installation, open a browser and go to http://localhost:8080
+
+-> Jenkins will ask for an Administrator password:
+
+Check this file:
+C:\Program Files\Jenkins\secrets\initialAdminPassword
+
+Copy and paste the password into the web interface
+
+-> Click “Install suggested plugins” and wait for the setup
+
+-> Create Admin User
+Once plugins are installed, Jenkins will prompt you to:
+
+Set up an admin user (or continue with the default)
+
+Configure instance settings (name, URL)
+
+-> Start Using Jenkins
+You now have Jenkins running as a Windows service:
+
+You can manage it from Services (services.msc)
+
+Access Jenkins at any time at http://localhost:8080
+
+/// doneee
+
+//// 6. Develop an application to demonstrate continuous integration and development using Jenkins.
+
+//// 7. Develop an application to demonstrate Docker commands for content management.
+
+Here’s a step-by-step guide to demonstrate how each of these Docker commands works in a typical workflow:
+
+### 1. `docker pull`
+
+**Purpose:** Download a Docker image from Docker Hub (or any other registry).
+
+**Example:**
+
+docker pull nginx
+
+### 2. `docker images`
+
+**Purpose:** List all Docker images present on your system.
+
+**Example:**
+
+docker images
+
+### 3. `docker run`
+
+**Purpose:** Start a container from an image.
+
+**Example:**
+
+docker run -d --name mynginx -p 8080:80 nginx
+
+### 4. `docker ps`
+
+**Purpose:** Show running containers.
+
+**Example:**
+
+docker ps
+
+### 5. `docker stop`
+
+**Purpose:** Stop a running container.
+
+**Example:**
+
+docker stop mynginx
+
+### 6. `docker start`
+
+**Purpose:** Restart a stopped container.
+
+**Example:**
+
+docker start mynginx
+
+### 7. `docker push`
+
+**Purpose:** Upload a Docker image to a registry like Docker Hub.
+
+**Steps:**
+
+1. **Tag the image**
+   Example:
+
+   docker tag nginx yourusername/nginx-demo:latest
+
+2. **Login to Docker Hub**
+
+   docker login
+   
+3. **Push the image**
+
+   docker push yourusername/nginx-demo:latest
+   
+
+**Explanation:**
+You must be logged in and have a Docker Hub account. This pushes the tagged image to your repository.
+
+/// 8. Develop a simple containerized application using Docker. 
+
+same as Q1
+
+//// 9. Develop an application to demonstrate Integration of Kubernetes and Docker
+
+--> pre-requisites
+
+Make sure the following are installed on your system:
+
+Python 3
+
+Docker
+
+kubectl (Kubernetes CLI)
+
+Minikube (for local Kubernetes cluster)
+
+Git
+
+/// Download kubectl
+
+---
+
+### ✅ Steps to Download `kubectl` Correctly
+
+1. **Direct Download**
+   Instead of using the dynamic URL with redirection, use the **latest stable version URL** for `kubectl`.
+
+   * Go to the [Kubernetes Release Page](https://dl.k8s.io/release/stable.txt).
+   * Grab the latest version number (e.g., `v1.25.6`).
+
+2. **Download `kubectl`**
+   Use the specific version URL in PowerShell:
+
+   ```powershell
+   curl.exe -LO "https://dl.k8s.io/release/v1.25.6/bin/windows/amd64/kubectl.exe"
+   ```
+
+   (Replace `v1.25.6` with the latest version you grabbed if it's newer.)
+
+---
+
+### ✅ Move and Set Path for `kubectl`
+
+Once the file is downloaded, follow these steps:
+
+1. **Move `kubectl.exe` to `C:\Program Files\kubectl`**:
+
+   ```powershell
+   New-Item -ItemType Directory -Path "C:\Program Files\kubectl" -Force
+   Move-Item .\kubectl.exe "C:\Program Files\kubectl"
+   ```
+
+2. **Add it to your system PATH**:
+
+   * Open **Start** → search **Environment Variables**.
+   * Click **Edit the system environment variables**.
+   * Click **Environment Variables**.
+   * In **System Variables**, select **Path**, click **Edit**, and **New** to add:
+
+     ```
+     C:\Program Files\kubectl
+     ```
+
+3. **Test**:
+
+   Run:
+
+   ```powershell
+   kubectl version --client
+   ```
+
+---
+
+/// download Minikube
+
+## ✅ Install Minikube on Windows
+
+### 📌 Option 1: Installer (Recommended)
+
+1. **Download Minikube** installer for Windows:
+
+   * Go to the official [Minikube Installation Page](https://minikube.sigs.k8s.io/docs/start/).
+   * Alternatively, you can download it directly from this link:
+     [Minikube Installer](https://storage.googleapis.com/minikube/releases/latest/minikube-installer.exe)
+
+2. **Run the installer**:
+   After downloading the `.exe` file, run it. It will automatically set up **Minikube** and configure the system PATH.
+
+---
+
+## ✅ Verify Minikube Installation
+
+After installation, open a **new Command Prompt** and check the version:
+
+```bash
+minikube version
+```
+
+You should see the Minikube version, confirming the installation was successful.
+
+---
+
+## ✅ Start Minikube
+
+To start your local Kubernetes cluster using Minikube:
+
+```bash
+minikube start --driver=docker
+```
+
+This command will set up Minikube using **Docker** as the driver (which works since you already have Docker installed).
+
+---
+
+////// steps
+
+Step 2: Set Up the Flask Application
+1. Create a new project folder
+
+mkdir flask-k8s-demo
+cd flask-k8s-demo
+
+2. Create app.py
+
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Hello from Flask on Kubernetes!"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+    
+3. Create requirements.txt
+
+flask
+
+✅ Step 3: Dockerize the Flask App
+1. Create a Dockerfile
+
+# Use Python base image
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Set the command to run the application
+CMD ["python", "app.py"]
+
+2. Build the Docker image
+
+docker build -t flask-k8s-demo .
+
+3. Test the Docker image locally (optional)
+
+docker run -p 5000:5000 flask-k8s-demo
+
+--> in cmd 
+
+    @FOR /f "tokens=*" %i IN ('minikube -p minikube docker-env') DO @%i
+    
+    docker build -t flask-k8s-demo .
+
+    docker images
+
+    docker build -t flask-k8s-demo .
+
+    docker images
+
+//// create 2 Files
+
+ Create Kubernetes Manifests
+In C:\Users\tejas\flask-k8s-demo, create two files:
+
+a) deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-k8s-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-k8s-demo
+  template:
+    metadata:
+      labels:
+        app: flask-k8s-demo
+    spec:
+      containers:
+      - name: flask-container
+        image: flask-k8s-demo
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        
+b) service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  type: NodePort
+  selector:
+    app: flask-k8s-demo
+  ports:
+    - port: 80
+      targetPort: 5000
+      nodePort: 30007
+      
+3. Deploy to Kubernetes
+Still in your project folder, apply both manifests:
+
+kubectl apply -f deployment.yaml
+
+kubectl apply -f service.yaml
+
+*You should see output confirming that the Deployment and Service were created.
+
+--> in cmd (same)
+
+    kubectl get pods
+
+    minikube service flask-service
+
+/// doneeee
+    
